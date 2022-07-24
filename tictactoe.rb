@@ -89,6 +89,7 @@ class Player < Tictactoe
 
   # game loops until win or draw
   def game
+    board
     loop do
       player1_selection
       player1_update
@@ -103,6 +104,4 @@ class Player < Tictactoe
   end
 end
 
-p1 = Player.new
-p1.board
-p1.game
+Player.new.game
