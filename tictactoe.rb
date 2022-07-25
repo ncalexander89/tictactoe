@@ -14,6 +14,8 @@ module Rules
     end
 
     # Displays board
+    private
+
     def board
       puts "
 
@@ -112,5 +114,4 @@ end
 
 include Rules
 
-g = Game.new
-g.game
+Game.new.game
