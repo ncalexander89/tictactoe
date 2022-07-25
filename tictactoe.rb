@@ -1,107 +1,116 @@
-# Set Initial conditions
-class Tictactoe
-  @@winning_array = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]]
-  @@array = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  @@turn = 0
-end
+# Set winning array as constant
+module Rules
+  WINNING_ARRAY = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]]
 
-# Player inherits Tictactoe class variables
-class Player < Tictactoe
-  @@p1_array = []
-  @@p2_array = []
+  # Define Player class with updatable arrays
+  class Player
+    attr_accessor :array, :p1_array, :p2_array, :turn
 
-  # Displays board
-  def board
-    puts "
+    def initialize
+      @array = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      @p1_array = []
+      @p2_array = []
+      @turn = 0
+    end
 
-    #{@@array[0]}  |  #{@@array[1]}  |  #{@@array[2]}
+    # Displays board
+    def board
+      puts "
+
+    #{@array[0]}  |  #{@array[1]}  |  #{@array[2]}
   -----+-----+-----
-    #{@@array[3]}  |  #{@@array[4]}  |  #{@@array[5]}
+    #{@array[3]}  |  #{@array[4]}  |  #{@array[5]}
   -----+-----+-----
-    #{@@array[6]}  |  #{@@array[7]}  |  #{@@array[8]}
+    #{@array[6]}  |  #{@array[7]}  |  #{@array[8]}
 
   "
-  end
+    end
 
-  # Player 1 makes selection, selection is stored in array
-  def player1_selection
-    puts 'Player 1 select your position'
-    @p1sel = gets.chomp.to_i
-    until @@array.include?(@p1sel) && (@p1sel.is_a? Numeric)
-      puts 'Enter valid number'
+    # Player 1 makes selection, selection is stored in array
+    def player1_selection
+      puts 'Player 1 select your position'
       @p1sel = gets.chomp.to_i
+      until @array.include?(@p1sel) && (@p1sel.is_a? Numeric)
+        puts 'Enter valid number'
+        @p1sel = gets.chomp.to_i
+      end
+      @p1_array = @p1_array.push(@p1sel).sort
     end
-    @@p1_array = @@p1_array.push(@p1sel).sort
-  end
 
-  # Board array is updated with player 1 selection
-  def player1_update
-    @@array = @@array.map do |number|
-      @p1sel == number ? 'x' : number
+    # Board array is updated with player 1 selection
+    def player1_update
+      @array = @array.map do |number|
+        @p1sel == number ? 'x' : number
+      end
     end
-  end
 
-  # Check if player 1 plays winning move, or if draw
-  def player1_win
-    @@winning_array.each do |win|
-      if win.all? { |p| @@p1_array.include?(p) }
-        puts 'Player 1 Wins!'
+    # Check if player 1 plays winning move, or if draw
+    def player1_win
+      WINNING_ARRAY.each do |win|
+        if win.all? { |p| @p1_array.include?(p) }
+          puts 'Player 1 Wins!'
+          return true
+        end
+      end
+      @turn += 1
+    end
+
+    def draw
+      if @turn == 5
+        puts 'Draw Game!'
         return true
       end
     end
-    @@turn += 1
-  end
 
-  def draw
-    if @@turn == 5
-      puts 'Draw Game!'
-      return true
-    end
-  end
-
-  # Player 2 makes selection, selection is stored in array
-  def player2_selection
-    puts 'Player 2 select your position'
-    @p2sel = gets.chomp.to_i
-    until @@array.include?(@p2sel) && (@p2sel.is_a? Numeric)
-      puts 'Enter valid number'
+    # Player 2 makes selection, selection is stored in array
+    def player2_selection
+      puts 'Player 2 select your position'
       @p2sel = gets.chomp.to_i
+      until @array.include?(@p2sel) && (@p2sel.is_a? Numeric)
+        puts 'Enter valid number'
+        @p2sel = gets.chomp.to_i
+      end
+      @p2_array = @p2_array.push(@p2sel).sort
     end
-    @@p2_array = @@p2_array.push(@p2sel).sort
-  end
 
-  # Board array is updated with player 2 selection
-  def player2_update
-    @@array = @@array.map do |number|
-      @p2sel == number ? 'o' : number
+    # Board array is updated with player 2 selection
+    def player2_update
+      @array = @array.map do |number|
+        @p2sel == number ? 'o' : number
+      end
     end
-  end
 
-  # Check if player 2 plays winning move
-  def player2_win
-    @@winning_array.each do |win|
-      if win.all? { |p| @@p2_array.include?(p) }
-        puts 'Player 2 Wins!'
-        return true
+    # Check if player 2 plays winning move
+    def player2_win
+      WINNING_ARRAY.each do |win|
+        if win.all? { |p| @p2_array.include?(p) }
+          puts 'Player 2 Wins!'
+          return true
+        end
       end
     end
   end
 
-  # game loops until win or draw
-  def game
-    board
-    loop do
-      player1_selection
-      player1_update
+  # game class inherits player variables and loops until win or draw
+  class Game < Player
+    def game
       board
-      return if player1_win == true || draw == true
+      loop do
+        player1_selection
+        player1_update
+        board
+        return if player1_win == true || draw == true
 
-      player2_selection
-      player2_update
-      board
-      return if player2_win == true
+        player2_selection
+        player2_update
+        board
+        return if player2_win == true
+      end
     end
   end
 end
 
-Player.new.game
+include Rules
+
+g = Game.new
+g.game
